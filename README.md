@@ -27,10 +27,10 @@ User = {
 
 ### frontend/src/Login.jsx
 
-1. [TODO 1 This component should be Register and Signin at the same time](./frontend/src/Login.jsx#L4)
-1. [TODO 1 transform this into a functional component](./frontend/src/Login.jsx#L6)
-1. [TODO 1 update react + react-dom to 16.8](./frontend/src/Login.jsx#L7)
-1. [TODO 1 add the conditionals isSignin state value to render the form differently](./frontend/src/Login.jsx#L8)
+1. [TODO 1 This component should be Register and Signin at the same time](./frontend/src/Login.jsx#L4) X
+1. [TODO 1 transform this into a functional component](./frontend/src/Login.jsx#L6) X
+1. [TODO 1 update react + react-dom to 16.8](./frontend/src/Login.jsx#L7) X
+1. [TODO 1 add the conditionals isSignin state value to render the form differently](./frontend/src/Login.jsx#L8) X
 1. [TODO 3 the form also needs now to pass this information to the submit function in the parent](./frontend/src/Login.jsx#L16)
 
 ### frontend/src/App.js
