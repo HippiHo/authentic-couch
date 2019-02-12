@@ -1,7 +1,7 @@
 # Authentic-Couch | user-facing web-frontend for JWT-API backend
 
 Install and run the client `cd frontend && npm install && npm start`  
-Install and run the API `cd backend && npm install && npm start`  
+Install and run the API `cd api && npm install && npm start`  
 Api on localhost:8080
 
 Seeded in database:
@@ -24,7 +24,6 @@ User = {
 ```
 
 ## Todos
-
 
 ### frontend/src/Login.jsx
 
@@ -50,5 +49,5 @@ User = {
 1. [TODO 6 validate the user after clicking in the mails link](./api/index.js#L124)
 
 ## api/User.js
-  
+
 1. [TODO 6 the user needs two values for getting verified. A token holder and a verified flag ](./api/User.js#L10)
