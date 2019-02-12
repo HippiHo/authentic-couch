@@ -1,0 +1,28 @@
+{
+  "name": "authentic-couch-elise",
+  "version": "1.0.0",
+  "description": "Install and run the client `cd frontend && npm install && npm start`   Install and run the API `cd api && npm install && npm start`   Api on localhost:8080",
+  "main": "index.js",
+  "dependencies": {
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently 'cd api && nodemon index.js' 'cd frontend && npm start'  -n  'API,FRONTEND' --prefix name -c 'blue.bold,red.bold'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HippiHo/authentic-couch.git"
+  },
+  "keywords": [],
+  "author": "Elise",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HippiHo/authentic-couch/issues"
+  },
+  "homepage": "https://github.com/HippiHo/authentic-couch#readme"
+}
