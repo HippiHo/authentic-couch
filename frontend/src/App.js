@@ -11,6 +11,7 @@ class App extends Component {
   state = {
     user: false,
     alert: false,
+    loading: false,
     form: {
       name: "",
       password: ""
@@ -45,24 +46,27 @@ class App extends Component {
     this.showNotification({ success: "Logged out!" });
 
     localStorage.removeItem("user");
-    this.setState({ user: null });
-    window.history.pushState(null, null, "/");
+    this.setState({ user: null, loading: false });
   };
-  onSubmit = event => {
+  onSubmit = (event, isSignin) => {
     // TODO 3 this function must now handle two submit-types, signup and signin
     // example:
     // onSubmit = (event, isSignin) => {
     //   const path = isSignin ? `authenticate` : `signup`;
     //   ...
-  
+
     event.preventDefault();
+    this.setState({
+      loading: true
+    });
+    const path = isSignin ? `authenticate` : `signup`;
 
     const body = JSON.stringify({
       name: this.state.form.name.toLowerCase(),
       password: this.state.form.password
     });
 
-    fetch(`${domain}:${port}/api/authenticate`, {
+    fetch(`${domain}:${port}/api/${path}`, {
       method: "POST",
       body: body,
       headers: {
@@ -71,24 +75,33 @@ class App extends Component {
     })
       .then(res => res.json())
       .then(data => {
-
         if (data.token) {
           this.showNotification({ success: data.message });
 
-          localStorage.setItem(
-            "user",
-            JSON.stringify({ name: data.user.name, token: data.token })
-          );
-          this.setState({
-            user: { name: data.user.name, token: data.user.token }
-          });
+          if (isSignin) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({ name: data.user.name, token: data.token })
+            );
+            this.setState({
+              user: {
+                name: data.user.name,
+                token: data.user.token,
+                loading: false
+              }
+            });
+          }
+        } else if (data.status === 201) {
+          this.setState({ loading: false });
+          this.showNotification({ success: data.message });
         } else if (!data.success) {
-          this.setState({ user: false });
+          this.setState({ user: false, loading: false });
           this.showNotification({ error: data.message });
         }
       })
       .catch(err => {
         console.log(err);
+        this.setState({ loading: false });
       });
   };
   render() {
@@ -121,9 +134,9 @@ class App extends Component {
                 <Redirect to={{ pathname: "/locations" }} />
               ) : (
                 <Login
+                  loading={this.state.loading}
                   onChange={this.onChange}
                   onSubmit={this.onSubmit}
-                  alert={this.state.alert}
                 />
               )
             }
