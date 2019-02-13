@@ -1,4 +1,6 @@
 require("dotenv").config({ path: "./.env" });
+const bcrypt = require("bcrypt");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -15,6 +17,12 @@ app.use(morgan("dev"));
 const jwt = require("jsonwebtoken");
 const Location = require("./Location");
 const User = require("./User");
+
+const saltRounds = 10;
+const salt = bcrypt.genSaltSync(saltRounds);
+
+const uuidv4 = require("uuid/v4");
+const sendVerificationEmail = require("./helper/mailer");
 
 const mongopath = process.env.MONGOPATH || `localhost`;
 const port = process.env.PORT || 8080;
@@ -81,10 +89,17 @@ apiRoutes.post("/authenticate", function(req, res) {
         });
       } else if (user) {
         // TODO 4 we need bcrypt to hash our passwords and compare with hash in db
-        if (user.password != req.body.password) {
-          res.json({
+        const hashedPW = bcrypt.compareSync(req.body.password, user.password); // true
+
+        if (!hashedPW) {
+          return res.json({
             success: false,
             message: "Authentication failed. Wrong password."
+          });
+        } else if (user.verified === false) {
+          return res.json({
+            success: false,
+            message: "E-Mail verification pending. Check your Inbox!"
           });
         } else {
           const payload = {
@@ -95,7 +110,7 @@ apiRoutes.post("/authenticate", function(req, res) {
             expiresIn: 86400
           });
 
-          res.json({
+          return res.json({
             success: true,
             user: user,
             message: "Enjoy your token!",
@@ -133,6 +148,50 @@ apiRoutes.post("/authenticate", function(req, res) {
 //   res.redirect("http://localhost:3000?verified=true");
 // });
 
+apiRoutes.post("/signup", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
+
+  if (user) {
+    return res.json({
+      success: false,
+      status: 409,
+      message: "Username already exists."
+    });
+  } else {
+    const hash = bcrypt.hashSync(req.body.password, salt);
+    const user = new User({
+      name: req.body.name,
+      password: hash,
+      verificationToken: uuidv4()
+    });
+
+    await user.save();
+
+    let verificationToken = user.verificationToken;
+
+    sendVerificationEmail(req, res, verificationToken);
+
+    return res.json({
+      success: true,
+      status: 201,
+      message: `User created`
+    });
+  }
+});
+
+apiRoutes.get("/verify/:verification_hash", async (req, res) => {
+  const user = await User.findOne(
+    {
+      verificationToken: req.params.verification_hash
+    },
+    function(err, user) {
+      (user.verified = true), user.save();
+
+      res.redirect("http://localhost:3000?verified=true");
+    }
+  );
+});
+
 apiRoutes.use(function(req, res, next) {
   const token = req.headers["x-access-token"];
 
@@ -166,9 +225,7 @@ apiRoutes.get("/", function(req, res) {
 });
 
 apiRoutes.get("/locations", function(req, res) {
-
   Location.find({}, function(err, locations) {
-
     res.json(locations);
   });
 });

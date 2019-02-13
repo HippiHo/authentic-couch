@@ -24,13 +24,15 @@ const Login = props => {
           className="form-signin"
         >
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="h3 my-5 font-weight-normal"> Authentic-Couch</h1>
+          <h1 className="h3 my-5 font-weight-normal">
+            {isSignin ? "Signin" : "Register"}
+          </h1>
           <label htmlFor="name" className="sr-only">
             Name
           </label>
           <input
             onChange={props.onChange}
-            type="name"
+            type="text"
             id="name"
             className="form-control"
             placeholder="Name"
@@ -53,8 +55,13 @@ const Login = props => {
               <input type="checkbox" value="remember-me" /> Remember me
             </label>
           </div>
-          <button className="btn btn-lg btn-primary btn-block">
-            {isSignin ? "Signin" : "Register"}
+          <button
+            disabled={props.loading}
+            className={`${
+              isSignin ? "btn-outline-primary" : "btn-primary"
+            } mb-3 btn btn-lg  btn-block`}
+          >
+            {!props.loading ? (isSignin ? "Signin" : "Register") : "Loading"}
           </button>
           <br />
           <button

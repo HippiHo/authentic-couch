@@ -54,7 +54,6 @@ class App extends Component {
     // onSubmit = (event, isSignin) => {
     //   const path = isSignin ? `authenticate` : `signup`;
     //   ...
-
     event.preventDefault();
     this.setState({
       loading: true
